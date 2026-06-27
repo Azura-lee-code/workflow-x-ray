@@ -377,14 +377,6 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Criticality & Online Badge */}
-          <div className="px-3 py-1 bg-slate-50 text-slate-700 text-[10px] font-bold rounded-full border border-slate-200 font-mono tracking-wider hidden sm:block">
-            READINESS
-          </div>
-          
-          <div className="px-3 py-1 bg-slate-50 text-slate-700 text-[10px] font-bold rounded-full border border-slate-200 font-mono tracking-wider hidden md:block">
-            SYSTEM ACTIVE
-          </div>
         </div>
       </header>
 
