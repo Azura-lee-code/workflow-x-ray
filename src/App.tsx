@@ -8,7 +8,6 @@ import {
   CheckCircle,
   HelpCircle,
   AlertTriangle,
-  Globe,
   PlusCircle,
   FileText,
   ChevronRight,
@@ -29,22 +28,9 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ReportItem, DiagnosticResult } from './types';
-import { makeT } from './i18n';
 import ReportDashboard from './components/ReportDashboard';
 import ReportHistory from './components/ReportHistory';
 import VoiceInterview from './components/VoiceInterview';
-
-// Preset languages supported
-const LANGUAGES = [
-  { code: 'English', label: 'English' },
-  { code: 'Spanish', label: 'Español' },
-  { code: 'French', label: 'Français' },
-  { code: 'Japanese', label: '日本語' },
-  { code: 'German', label: 'Deutsch' },
-  { code: 'Portuguese', label: 'Português' },
-  { code: 'Chinese', label: '中文 (Simplified)' },
-  { code: 'Italian', label: 'Italiano' }
-];
 
 // High-fidelity pre-scanned consultant examples to explore instantly
 const EXAMPLES = [
@@ -93,8 +79,6 @@ export default function App() {
   // Application State
   const [history, setHistory] = useState<ReportItem[]>([]);
   const [currentReportId, setCurrentReportId] = useState<string | null>(null);
-  const [language, setLanguage] = useState<string>('English');
-  const t = makeT(language);
   const [inputMode, setInputMode] = useState<'standard' | 'guided'>('guided');
   const [projectName, setProjectName] = useState('');
   
@@ -266,7 +250,7 @@ export default function App() {
     ].filter(Boolean).join(' | ');
 
     const payload = {
-      language,
+      language: 'English',
       inputMode,
       userMaterial: inputMode === 'standard' ? userMaterial : '',
       optionalContext: contextStr,
@@ -299,7 +283,7 @@ export default function App() {
         title: normalizedProjectName,
         createdAt: new Date().toISOString(),
         input: {
-          language,
+          language: 'English',
           inputMode,
           userMaterial: userMaterial,
           projectName: normalizedProjectName,
@@ -393,23 +377,6 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Preset Language Selector */}
-          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs text-slate-700">
-            <Globe className="h-3.5 w-3.5 text-slate-400" />
-            <span className="hidden md:inline text-[11px] font-mono text-slate-400 mr-1">Output language:</span>
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="bg-transparent border-none text-slate-700 focus:outline-none cursor-pointer font-medium"
-            >
-              {LANGUAGES.map((lang) => (
-                <option key={lang.code} value={lang.code} className="bg-white text-slate-800">
-                  {lang.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
           {/* Criticality & Online Badge */}
           <div className="px-3 py-1 bg-slate-50 text-slate-700 text-[10px] font-bold rounded-full border border-slate-200 font-mono tracking-wider hidden sm:block">
             READINESS
@@ -670,7 +637,7 @@ export default function App() {
                             : 'text-slate-500 hover:text-slate-900'
                         }`}
                       >
-                        {t('form.guided')}
+                        Guided scoping
                       </button>
                       <button
                         type="button"
@@ -681,7 +648,7 @@ export default function App() {
                             : 'text-slate-500 hover:text-slate-900'
                         }`}
                       >
-                        {t('form.raw')}
+                        Raw material
                       </button>
                     </div>
                   </div>
@@ -906,7 +873,7 @@ export default function App() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {/* Industry */}
                       <div className="space-y-1">
-                        <span className="text-[10px] text-slate-400 uppercase font-mono">{t('ctx.industry')}</span>
+                        <span className="text-[10px] text-slate-400 uppercase font-mono">Industry</span>
                         <input
                           type="text"
                           value={industry}
@@ -918,7 +885,7 @@ export default function App() {
 
                       {/* Org Size */}
                       <div className="space-y-1">
-                        <span className="text-[10px] text-slate-400 uppercase font-mono">{t('ctx.orgSize')}</span>
+                        <span className="text-[10px] text-slate-400 uppercase font-mono">Organization Size</span>
                         <input
                           type="text"
                           value={orgSize}
@@ -930,15 +897,15 @@ export default function App() {
 
                       {/* Risk Appetite */}
                       <div className="space-y-1">
-                        <span className="text-[10px] text-slate-400 uppercase font-mono">{t('ctx.risk')}</span>
+                        <span className="text-[10px] text-slate-400 uppercase font-mono">Risk Appetite</span>
                         <select
                           value={riskAppetite}
                           onChange={(e) => setRiskAppetite(e.target.value)}
                           className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs focus:outline-none focus:border-slate-950 focus:ring-1 focus:ring-slate-950 focus:bg-white text-slate-900 transition-colors cursor-pointer"
                         >
-                          <option value="Conservative">{t('ctx.conservative')}</option>
-                          <option value="Moderate">{t('ctx.moderate')}</option>
-                          <option value="Aggressive">{t('ctx.aggressive')}</option>
+                          <option value="Conservative">Conservative</option>
+                          <option value="Moderate">Moderate</option>
+                          <option value="Aggressive">Aggressive</option>
                         </select>
                       </div>
                     </div>
@@ -955,7 +922,7 @@ export default function App() {
                       className="bg-slate-900 hover:bg-slate-800 text-white font-display font-semibold text-xs uppercase tracking-wider px-6 py-3 rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer border border-slate-800"
                     >
                       <Play className="h-4 w-4 fill-current" />
-                      {t('form.run')}
+                      Run Diagnostic
                     </button>
                   </div>
 
@@ -967,7 +934,7 @@ export default function App() {
           <AnimatePresence>
             {isVoiceInterviewOpen && (
               <VoiceInterview
-                language={language}
+                language="English"
                 onSaveTranscript={handleSaveVoiceTranscript}
                 onClose={() => setIsVoiceInterviewOpen(false)}
               />
