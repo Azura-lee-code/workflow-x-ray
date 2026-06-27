@@ -96,6 +96,7 @@ export default function App() {
   const [language, setLanguage] = useState<string>('English');
   const t = makeT(language);
   const [inputMode, setInputMode] = useState<'standard' | 'guided'>('guided');
+  const [projectName, setProjectName] = useState('');
   
   // Guided Form State
   const [statedGoal, setStatedGoal] = useState('');
@@ -236,6 +237,7 @@ export default function App() {
 
   // Pre-fill an example
   const handlePreFillExample = (example: typeof EXAMPLES[number]) => {
+    setProjectName(example.title);
     setInputMode(example.inputMode);
     setStatedGoal(example.statedGoal);
     setProposedSolution(example.proposedSolution);
@@ -250,6 +252,10 @@ export default function App() {
   // Run Diagnosis analysis
   const handleRunAnalysis = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!projectName.trim()) {
+      alert('Please enter a project name before running the scan.');
+      return;
+    }
     setIsLoading(true);
     setLoadingStepIdx(0);
 
@@ -286,19 +292,17 @@ export default function App() {
 
       const resultData = (await response.json()) as DiagnosticResult;
 
-      // Extract a descriptive title for this scan
-      const title = inputMode === 'guided'
-        ? (statedGoal.substring(0, 50) + (statedGoal.length > 50 ? '...' : ''))
-        : (userMaterial.substring(0, 50) + (userMaterial.length > 50 ? '...' : ''));
+      const normalizedProjectName = projectName.trim();
 
       const newReport: ReportItem = {
         id: crypto.randomUUID(),
-        title: title || 'Untitled Scoping Diagnosis',
+        title: normalizedProjectName,
         createdAt: new Date().toISOString(),
         input: {
           language,
           inputMode,
           userMaterial: userMaterial,
+          projectName: normalizedProjectName,
           optionalContext: contextStr,
           statedGoal,
           proposedSolution,
@@ -332,11 +336,15 @@ export default function App() {
   // Start fresh scan
   const handleNewDiagnosis = () => {
     setCurrentReportId(null);
+    setProjectName('');
     setStatedGoal('');
     setProposedSolution('');
     setStakeholdersInput('');
     setDataSourcesInput('');
     setUserMaterial('');
+    setVoiceTranscript('');
+    setUploadedFiles([]);
+    setUploadError(null);
   };
 
   // Clear entire history
@@ -676,6 +684,22 @@ export default function App() {
                         {t('form.raw')}
                       </button>
                     </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="flex items-center gap-1.5 text-xs font-bold text-slate-700 font-mono uppercase tracking-wider">
+                      <Briefcase className="h-3.5 w-3.5 text-slate-500" />
+                      Project Name
+                    </label>
+                    <p className="text-[11px] text-slate-500">Name this scan so the report and archive are easy to identify.</p>
+                    <input
+                      required
+                      type="text"
+                      value={projectName}
+                      onChange={(e) => setProjectName(e.target.value)}
+                      placeholder="e.g. Customer Support AI Triage Rollout"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-slate-950 focus:ring-1 focus:ring-slate-950 focus:bg-white text-slate-900 transition-colors"
+                    />
                   </div>
 
                   {/* Form Content */}

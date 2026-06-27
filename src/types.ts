@@ -147,6 +147,7 @@ export interface ReportItem {
     inputMode: 'standard' | 'guided';
     optionalContext?: string;
     userMaterial: string;
+    projectName?: string;
     statedGoal?: string;
     proposedSolution?: string;
     stakeholdersInput?: string;
