@@ -251,12 +251,6 @@ export default function ReportDashboard({ report }: ReportDashboardProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="text-right hidden md:block">
-            <p className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Verdict</p>
-            <p className="font-display font-bold text-slate-900 uppercase text-sm">
-              {result.overview.recommendedDecision}
-            </p>
-          </div>
           <span className={`px-3 py-1.5 rounded-lg border text-xs uppercase font-bold font-mono tracking-wider ${getDecisionBadgeColor(result.overview.recommendedDecision)}`}>
             {result.overview.recommendedDecision}
           </span>

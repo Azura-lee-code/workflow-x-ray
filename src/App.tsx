@@ -349,6 +349,7 @@ export default function App() {
 
   // Current active report object
   const activeReport = history.find(item => item.id === currentReportId);
+  const loadingProgress = Math.round(((loadingStepIdx + 1) / loadingSteps.length) * 100);
 
   return (
     <div className="h-screen max-h-screen bg-[#F1F5F9] text-slate-900 font-sans flex flex-col antialiased overflow-hidden">
@@ -440,46 +441,137 @@ export default function App() {
         <div className="flex-1 flex flex-col overflow-hidden bg-slate-50">
           <AnimatePresence mode="wait">
             {isLoading ? (
-              /* Immersive clinical loading scan overlay */
+              /* Report generation progress */
               <motion.div
                 key="loader"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-950 text-slate-100 font-mono space-y-8"
+                className="flex-1 overflow-y-auto bg-[#F1F5F9] p-6 md:p-8"
               >
-                <div className="max-w-md w-full text-center space-y-6">
-                  {/* Glowing core animation */}
-                  <div className="relative h-24 w-24 mx-auto flex items-center justify-center">
-                    <div className="absolute inset-0 rounded-full border-2 border-emerald-500/20 animate-ping"></div>
-                    <div className="absolute inset-2 rounded-full border-2 border-emerald-400/40 animate-pulse"></div>
-                    <div className="h-12 w-12 rounded-full bg-gradient-to-tr from-emerald-600 to-sky-400 flex items-center justify-center border border-emerald-300">
-                      <Sparkle className="h-6 w-6 text-slate-950 animate-spin" style={{ animationDuration: '3s' }} />
+                <div className="mx-auto flex min-h-full w-full max-w-5xl items-center">
+                  <div className="w-full space-y-6">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] bg-white text-slate-600 font-mono px-2 py-0.5 rounded border border-slate-200 uppercase tracking-wider font-semibold">
+                            Diagnosis in progress
+                          </span>
+                          <span className="text-[10px] bg-emerald-50 text-emerald-700 font-mono px-2 py-0.5 rounded border border-emerald-200 uppercase tracking-wider font-semibold">
+                            Gemini analysis
+                          </span>
+                        </div>
+                        <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-slate-900">
+                          Building the workflow diagnosis
+                        </h2>
+                        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
+                          Workflow X-Ray is comparing stated goals, stakeholder signals, operational constraints, and data readiness before rendering the report.
+                        </p>
+                      </div>
+                      <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-right shadow-sm">
+                        <div className="font-mono text-[10px] uppercase tracking-wider text-slate-400">Readiness</div>
+                        <div className="font-display text-2xl font-bold text-slate-900">{loadingProgress}%</div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+                      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                        <div className="flex items-start justify-between gap-4 border-b border-slate-200 pb-4">
+                          <div>
+                            <h3 className="font-display text-sm font-bold uppercase tracking-wider text-slate-800">
+                              Current diagnostic stage
+                            </h3>
+                            <p className="mt-1 text-xs leading-relaxed text-slate-500">
+                              The report will open automatically when synthesis is complete.
+                            </p>
+                          </div>
+                          <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
+                        </div>
+
+                        <div className="mt-6 space-y-4">
+                          <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 p-4">
+                            <div className="flex items-start gap-3">
+                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-emerald-200 bg-white text-emerald-700">
+                                <Sparkle className="h-4 w-4" />
+                              </div>
+                              <div>
+                                <div className="font-mono text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                                  Step {loadingStepIdx + 1} of {loadingSteps.length}
+                                </div>
+                                <p className="mt-1 text-sm font-semibold leading-relaxed text-slate-900">
+                                  {loadingSteps[loadingStepIdx]}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div>
+                            <div className="mb-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-slate-400">
+                              <span>Analysis progress</span>
+                              <span>{loadingProgress}%</span>
+                            </div>
+                            <div className="h-2 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+                              <motion.div
+                                className="h-full rounded-full bg-emerald-500"
+                                initial={{ width: '8%' }}
+                                animate={{ width: `${loadingProgress}%` }}
+                                transition={{ duration: 0.45, ease: 'easeOut' }}
+                              ></motion.div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                        <h3 className="font-display text-sm font-bold uppercase tracking-wider text-slate-800">
+                          Diagnostic queue
+                        </h3>
+                        <div className="mt-5 space-y-3">
+                          {loadingSteps.map((step, idx) => {
+                            const complete = idx < loadingStepIdx;
+                            const active = idx === loadingStepIdx;
+                            return (
+                              <div
+                                key={step}
+                                className={`flex items-start gap-3 rounded-lg border p-3 ${
+                                  active
+                                    ? 'border-emerald-200 bg-emerald-50/70'
+                                    : complete
+                                    ? 'border-slate-200 bg-slate-50'
+                                    : 'border-slate-100 bg-white'
+                                }`}
+                              >
+                                <div
+                                  className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
+                                    complete
+                                      ? 'border-emerald-200 bg-emerald-500 text-white'
+                                      : active
+                                      ? 'border-emerald-300 bg-white text-emerald-700'
+                                      : 'border-slate-200 bg-slate-50 text-slate-400'
+                                  }`}
+                                >
+                                  {complete ? (
+                                    <CheckCircle className="h-3.5 w-3.5" />
+                                  ) : active ? (
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                  ) : (
+                                    <Clock className="h-3.5 w-3.5" />
+                                  )}
+                                </div>
+                                <p className={`text-xs leading-relaxed ${active ? 'font-semibold text-slate-900' : 'text-slate-500'}`}>
+                                  {step}
+                                </p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-center font-mono text-[10px] uppercase tracking-wider text-slate-400 shadow-sm">
+                      Server-side Gemini analysis is running. Keep this tab open until the report appears.
                     </div>
                   </div>
-
-                  <div className="space-y-2">
-                    <h3 className="font-display font-bold text-slate-200 text-sm tracking-widest uppercase">
-                      SCANNING WORKFLOW GENOME
-                    </h3>
-                    <p className="text-xs text-emerald-400 font-semibold h-12 leading-relaxed">
-                      {loadingSteps[loadingStepIdx]}
-                    </p>
-                  </div>
-
-                  {/* Progress gauge bar */}
-                  <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
-                    <motion.div
-                      className="bg-emerald-400 h-full rounded-full"
-                      initial={{ width: '0%' }}
-                      animate={{ width: '100%' }}
-                      transition={{ duration: 30, ease: 'linear' }}
-                    ></motion.div>
-                  </div>
-
-                  <p className="text-[10px] text-slate-600">
-                    Workflow X-Ray operates server-side via Gemini 3.5 Flash context models. Do not close this tab.
-                  </p>
                 </div>
               </motion.div>
             ) : activeReport ? (
