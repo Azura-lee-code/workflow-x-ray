@@ -1,0 +1,10 @@
+{
+  "name": "Workflow X-Ray",
+  "description": "An organizational problem diagnostician that uncovers the real underlying issues behind complex workflows, initiatives, and KPIs, providing actionable reform roadmaps and AI fit assessments.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
